@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1877F2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DVBible Game">
+<meta property="og:title"       content="DVBible Game — Bible Brain Trainer">
+<meta property="og:description" content="A Memory game that sharpens your mind for the Word of God.">
+<meta property="og:image"       content="https://i.ibb.co/QjFmGPJd/file-00000000747471f4af80729cba05e54f.png/og-image.png">
+<meta property="og:url"         content="https://dvgame.donvictorministry.org.ng/">
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="DVBible Game">
+<meta name="twitter:card"       content="summary_large_image">
+<title>DVBible Game | Memory Brain Trainer</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=EB+Garamond:ital,wght@0,500;0,700;1,500;1,700&display=swap');
+
+:root {
+  --fb:#1877F2; --fb-dk:#0f5ecb;
+  --gold:#e8a900; --purple:#4a0e4e;
+  --radius:16px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:17px;-webkit-text-size-adjust:100%;}
+
+/* ══ DARK ══ */
+body.dark{
+  --bg:#0d0d0d; --surface:#1a1a1a; --surface2:#242424; 
+  --text:#ffffff; --text2:#b0b0b0; --text3:#b0b0b0;
+  --btn-bg:#1a1a1a; --btn-bdr:#ffffff; --btn-col:#ffffff; --btn-hvr:#2a2a2a;
+  --icon-bdr:#ffffff; --icon-col:#ffffff; --icon-fill:#ffffff; --icon-hcol:#0d0d0d;
+  --modal-bg:#0d0d0d; --divider:rgba(255,255,255,0.12);
+  --card-back:linear-gradient(145deg,#c8890a,#a06800);
+  --shadow:0 4px 24px rgba(0,0,0,0.6); --shadow-btn:0 2px 12px rgba(0,0,0,0.5);
+  --verse-col:#f5e9c8;
+}
+/* ══ LIGHT ══ */
+body.light{
+  --bg:#f9f9f8; --surface:#ffffff; --surface2:#f0f0ef;
+  --text:#0d0d0d; --text2:#555555; --text3:#1877F2;
+  --btn-bg:#ffffff; --btn-bdr:#1877F2; --btn-col:#1877F2; --btn-hvr:#e8f0fe;
+  --icon-bdr:#1877F2; --icon-col:#1877F2; --icon-fill:#1877F2; --icon-hcol:#ffffff;
+  --modal-bg:#f9f9f8; --divider:rgba(24,119,242,0.15);
+  --card-back:linear-gradient(145deg,#e8a900,#c88800);
+  --shadow:0 4px 24px rgba(0,0,0,0.08); --shadow-btn:0 2px 12px rgba(24,119,242,0.15);
+  --verse-col:#1a1a1a;
+}
+
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; min-height:-webkit-fill-available;
+  display:flex; flex-direction:column;
+  transition:background .25s,color .25s;
+  overflow-x:hidden;
+}
+
+/* ── VERSION BADGE ── */
+.version-badge{
+  position:fixed; bottom:12px; right:14px;
+  background:var(--fb); color:#fff;
+  font-size:14px; font-weight:900;justify-:center; letter-spacing:1px; 
+  padding:4px 10px; border-radius:20px;
+  z-index:8000; pointer-events:none;
+  box-shadow:0 2px 8px rgba(24,119,242,0.4);
+}
+
+/* ── TICKER ── */
+#sys-ticker{
+  width:100%; height:auto; min-height:52px;
+  overflow:hidden; display:none;
+  font-family:'Inter',sans-serif; font-weight:800;
+  line-height:1.5; padding:10px 0;
+  flex-shrink:0; z-index:100;
+}
+.ticker-item{
+  width:100%; text-align:center; position:relative;
+  transform:translateX(100%);
+  transition:transform 0.5s ease-in-out;
+  white-space:normal; padding:6px 20px;
+  font-size:16px; letter-spacing:1.5px;
+}
+.ticker-item a{color:inherit;text-decoration:underline;}
+.ticker-active{transform:translateX(0);}
+.ticker-exit  {transform:translateX(-100%);}
+
+/* ── FELLOWSHIP BANNER — 3 locations ── */
+.fellowship-bar{
+  width:100%;
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px 16px;
+  font-family:'Inter',sans-serif;
+  font-size:16px; font-weight:700;
+  background:var(--fb); color:#fff;
+  flex-shrink:0;
+}
+.fellowship-bar.show{display:flex;}
+.fellowship-bar.pos-bottom{
+  position:fixed; bottom:0; left:0;
+  z-index:8500;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+}
+.fellowship-bar.pos-center{
+  border-radius:var(--radius);
+  margin-bottom:10px;
+}
+
+/* ── SUPPORT BANNER ── */
+.support-bar{
+  width:100%;
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px 16px;
+  font-family:'Inter',sans-serif;
+  font-size:15px; font-weight:600;
+  flex-shrink:0;
+}
+.support-bar.show{display:flex;}
+body.dark  .support-bar{background:#1a1a1a; color:#fff; border-bottom:2px solid #fff;}
+body.light .support-bar{background:#1877F2;    color:#fff; border-bottom:2px solid var(--fb);}
+.support-bar.pos-bottom{
+  position:fixed; bottom:0; left:0;
+  z-index:8500;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.25);
+}
+
+/* ── NOTIF BUTTONS ── */
+.notif-wa-btn{
+  background:#25D366; border:none; color:#fff;
+  font-family:'Inter',sans-serif; font-size:16px;
+  font-weight:800; letter-spacing:1px;
+  padding:10px 18px; border-radius:24px;
+  cursor:pointer; display:flex; align-items:center;
+  gap:7px; flex-shrink:0; transition:opacity .2s;
+  white-space:nowrap;
+}
+.notif-wa-btn:hover{opacity:.85;}
+.notif-x{
+  background:transparent; border:none; color:inherit;
+  font-size:24px; cursor:pointer;
+  flex-shrink:0; opacity:.85; line-height:1;
+}
+
+/* ── INSTALL / SHARE ROW ── */
+.app-action-row{
+  display:flex; align-items:center;
+  justify-content:center; gap:18px;
+  margin-bottom:14px; width:100%;
+}
+.app-action-btn{
+  display:flex; flex-direction:column;
+  align-items:center; gap:6px;
+  background:var(--btn-bg);
+  border:2.5px solid var(--btn-bdr);
+  color:var(--btn-col);
+  font-family:'Inter',sans-serif;
+  font-size:14px; font-weight:800;
+  letter-spacing:1px;
+  padding:12px 18px; border-radius:14px;
+  cursor:pointer; transition:background .2s,transform .15s;
+  box-shadow:var(--shadow-btn); min-width:90px; text-align:center;
+}
+.app-action-btn i{font-size:26px; display:block;}
+.app-action-btn:active{transform:scale(0.95);}
+.app-action-btn:hover {background:var(--btn-hvr);}
+
+/* ── HOME ── */
+.home{
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; padding:28px 16px 60px;
+  max-width:560px; margin:0 auto; width:100%;
+}
+.home-icon{font-size:72px; margin-bottom:12px; line-height:1;}
+body.dark  .home-icon{color:#ffffff;}
+body.light .home-icon{color:var(--fb);}
+.home-title{
+  font-size:clamp(26px,6vw,36px); font-weight:900;
+  letter-spacing:-0.5px; text-align:center;
+  line-height:1.1; margin-bottom:6px;
+}
+body.dark  .home-title{color:#ffffff;}
+body.light .home-title{color:#1877F2;}
+.home-sub{
+  font-family:'Inter',sans-serif; font-style: bold;
+  font-size:15px; font-weight:800;
+  text-align:center; color:var(--text3);
+  margin-bottom:24px; letter-spacing:0.3px;
+}
+
+/* ── MAIN BUTTONS ── */
+.main-btns{width:100%; display:flex; flex-direction:column; gap:14px; margin-bottom:28px;}
+.main-btn{
+  width:100%; padding:20px 22px;
+  background:var(--btn-bg); border:2.5px solid var(--btn-bdr);
+  color:var(--btn-col);
+  font-family:'Inter',sans-serif; font-size:18px;
+  font-weight:800; letter-spacing:0.5px;
+  border-radius:var(--radius); cursor:pointer;
+  display:flex; align-items:center; gap:18px;
+  transition:background .2s,transform .1s;
+  box-shadow:var(--shadow-btn); text-align:left;
+}
+.main-btn:active{transform:scale(0.98);}
+.main-btn:hover {background:var(--btn-hvr);}
+.main-btn i{font-size:26px; width:32px; text-align:center; flex-shrink:0;}
+.btn-label{display:flex; flex-direction:column; gap:3px;}
+.btn-label small{font-size:12px; font-weight:500; opacity:.6; letter-spacing:0;}
+
+/* ── DEV CARD ── */
+.dev-card{
+  width:100%; background:var(--surface);
+  border:2.5px solid var(--btn-bdr);
+  border-radius:var(--radius);
+  padding:28px 20px 24px; text-align:center;
+  box-shadow:var(--shadow);
+}
+.dev-avatar-wrap{
+  width:96px; height:96px; border-radius:50%;
+  border:3.5px solid var(--btn-bdr);
+  margin:0 auto 14px; overflow:hidden;
+  background:var(--surface2);
+  display:flex; align-items:center; justify-content:center;
+}
+.dev-avatar-wrap img{width:100%;height:100%;object-fit:cover;}
+.dev-name{font-size:18px; font-weight:900; letter-spacing:0.3px; margin-bottom:4px;}
+body.dark  .dev-name{color:#ffffff;}
+body.light .dev-name{color: #1877F2;}
+.dev-role{
+  font-family:'Inter',sans-serif; font-size:14px;  font-weight:900; color:var(--text3); margin-bottom:18px;
+}
+.dev-hr{width:50px; height:2px; background:var(--btn-bdr); margin:0 auto 18px; border:none; opacity:.5;}
+.dev-links-row{
+  display:flex; flex-wrap:wrap;
+  justify-content:center; gap:10px; margin-bottom:18px;
+}
+.dev-link-pill{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:'Inter',sans-serif; font-size:17px;
+  font-weight:800; letter-spacing:0.3px;
+  padding:10px 18px; border-radius:30px;
+  text-decoration:none;
+  border:2.5px solid var(--btn-bdr);
+  color:var(--btn-col); background:var(--btn-bg);
+  transition:background .2s;
+}
+.dev-link-pill:hover{background:var(--btn-hvr);}
+.about-dev-btn{
+  width:100%; padding:18px;
+  background:var(--btn-bg); border:2.5px solid var(--btn-bdr);
+  color:var(--btn-col);
+  font-family:'Inter',sans-serif; font-size:18px;
+  font-weight:800; letter-spacing:0.3px;
+  border-radius:var(--radius); cursor:pointer;
+  display:flex; align-items:center;
+  justify-content:center; gap:12px;
+  transition:background .2s; margin-bottom:20px;
+  box-shadow:var(--shadow-btn);
+}
+.about-dev-btn:hover{background:var(--btn-hvr);}
+.about-dev-btn i{font-size:20px;}
+.icon-btns{display:flex; gap:18px; justify-content:center;}
+.icon-btn{
+  width:56px; height:56px; border-radius:50%;
+  border:2.5px solid var(--icon-bdr);
+  background:transparent; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  text-decoration:none; position:relative;
+  overflow:hidden; transition:transform .25s,box-shadow .25s;
+}
+.icon-btn i{
+  font-size:24px; color:var(--icon-col);
+  z-index:1; position:relative; transition:color .25s;
+}
+.icon-btn::before{
+  content:''; position:absolute; inset:0;
+  background:var(--icon-fill); border-radius:50%;
+  transform:scale(0); transition:transform .25s;
+}
+.icon-btn:hover::before{transform:scale(1);}
+.icon-btn:hover i{color:var(--icon-hcol);}
+.icon-btn:hover{transform:translateY(-5px); box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+
+/* ── FOOTER ── */
+.footer{
+  text-align:center; font-size:11px; font-weight:800;
+  letter-spacing:2px; padding:22px 0 8px; color:#1877F2;
+}
+
+/* ══ MODALS ══ */
+.fs-modal{
+  position:fixed; inset:0; z-index:9000;
+  display:none; flex-direction:column;
+  background:var(--modal-bg); overflow:hidden;
+}
+.fs-modal.open{display:flex;}
+.modal-bar{
+  width:100%; display:flex;
+  justify-content:space-between; align-items:center;
+  padding:16px 20px;
+  border-bottom:2px solid var(--divider);
+  flex-shrink:0; background:var(--surface);
+}
+.modal-bar-title{font-size:15px; font-weight:800; letter-spacing:0.5px;}
+body.dark  .modal-bar-title{color:#ffffff;}
+body.light .modal-bar-title{color:var(--fb);}
+.x-btn{
+  width:40px; height:40px; border-radius:50%;
+  background:var(--surface2);
+  border:2px solid var(--btn-bdr);
+  cursor:pointer; display:flex;
+  align-items:center; justify-content:center;
+  transition:opacity .2s; flex-shrink:0;
+}
+.x-btn i{font-size:18px;}
+body.dark  .x-btn i{color:#ffffff;}
+body.light .x-btn i{color:var(--fb);}
+.x-btn:hover{opacity:.7;}
+.modal-body{
+  flex:1; overflow-y:auto;
+  padding:24px 18px 48px;
+  -webkit-overflow-scrolling:touch;
+}
+.modal-inner{width:100%; max-width:640px; margin:0 auto;}
+
+/* ── WHY MODAL ── */
+.why-icon{font-size:54px; text-align:center; margin-bottom:14px;}
+body.dark  .why-icon{color:#1877F2;}
+body.light .why-icon{color:var(--fb);}
+.why-title{
+  font-size:clamp(20px,5vw,28px); font-weight:900;
+  text-align:center; margin-bottom:24px; line-height:1.2;
+}
+body.dark  .why-title{color:#ffffff;}
+body.light .why-title{color:#1877F2;}
+.why-body{
+  font-family:'Inter',sans-serif;
+  font-size:18px;
+  line-height:2; font-weight:800;
+}
+body.dark  .why-body{color:#f0e6c8;}
+body.light .why-body{color:#1a1a1a;}
+.why-body p{margin-bottom:20px;}
+.scripture-block{
+  font-family:'Inter',sans-serif; font-style:bold;
+  font-size:clamp:17px; font-weight:800;
+  line-height:1.9;
+  border-left:4px solid var(--btn-bdr);
+  padding:16px 20px; margin:24px 0;
+  border-radius:0 8px 8px 0;
+}
+body.dark  .scripture-block{color:#f0e6c8; background:rgba(255,255,255,0.04);}
+body.light .scripture-block{color:#1a1a1a; background:rgba(24,119,242,0.05);}
+.sec-head{
+  font-size:13px; font-weight:800; letter-spacing:2px;
+  text-transform:uppercase; margin:28px 0 12px;
+  display:flex; align-items:center; gap:10px;
+}
+body.dark  .sec-head{color:#ffffff;}
+body.light .sec-head{color:var(--fb);}
+.reward-list{list-style:none; display:flex; flex-direction:column; gap:14px; margin:10px 0 22px;}
+.reward-list li{
+  display:flex; align-items:center; gap:14px;
+  font-family:'Inter',sans-serif;
+  font-size:clamp:17px; font-weight:800;
+}
+body.dark  .reward-list li{color:#f0e6c8;}
+body.light .reward-list li{color:#1a1a1a;}
+.reward-list li i{font-size:22px; width:28px; text-align:center; flex-shrink:0;}
+body.dark  .reward-list li i{color:#ffffff;}
+body.light .reward-list li i{color:var(--fb);}
+.author-line{
+  font-size:25px; font-weight:800; letter-spacing:1px;
+  margin-top:28px; display:flex; align-items:center; gap:10px;
+}
+body.dark  .author-line{color:#ffffff;}
+body.light .author-line{color:var(--fb);}
+
+/* ── DEV MODAL ── */
+.dev-m-avatar{
+  width:110px; height:110px; border-radius:50%;
+  border:4px solid var(--btn-bdr);
+  margin:0 auto 16px; overflow:hidden;
+  background:var(--surface2);
+  display:flex; align-items:center; justify-content:center;
+}
+.dev-m-avatar img{width:100%;height:100%;object-fit:cover;}
+.dev-m-name{font-size:clamp(20px,5vw,26px); font-weight:900; text-align:center; margin-bottom:6px;}
+body.dark  .dev-m-name{color:#ffffff;}
+body.light .dev-m-name{color:#0d0d0d;}
+.dev-m-sub{
+  font-family:'EB Garamond',serif; font-style:bold; 
+  font-size:19px; text-align:center;
+  color:var(--btn-col); margin-bottom:22px;
+}
+.dev-m-hr{width:60px; height:2px; background:var(--btn-bdr); margin:0 auto 22px; border:none; opacity:.4;}
+.dev-m-bio{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(24px,3vw,28px); font-style:italic; 
+  line-height:1.9; margin-bottom:24px;
+}
+body.dark  .dev-m-bio{color:#f0e6c8;}
+body.light .dev-m-bio{color:#1a1a1a;}
+.dev-m-links{display:flex; flex-direction:column; gap:12px;}
+.dev-m-btn{
+  width:100%; padding:18px 22px;
+  background:var(--btn-bg); border:2.5px solid var(--btn-bdr);
+  color:var(--btn-col);
+  font-family:'Inter',sans-serif; font-size:22px;
+  font-weight:900; letter-spacing:0.3px;
+  border-radius:var(--radius); cursor:pointer;
+  text-decoration:none;
+  display:flex; align-items:center; gap:14px;
+  transition:background .2s; box-shadow:var(--shadow-btn);
+}
+.dev-m-btn:hover{background:var(--btn-hvr);}
+.dev-m-btn i{font-size:22px;}
+
+/* ── GAME MODAL ── */
+#gameModal .modal-bar{
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+}
+#swTime{
+  font-size:clamp(22px,5vw,30px); font-weight:900;
+  display:flex; align-items:center; gap:8px;
+}
+body.dark  #swTime{color:#ffffff;}
+body.light #swTime{color:var(--fb);}
+.game-title-center{
+  font-size:clamp(13px,3vw,16px); font-weight:800;
+  letter-spacing:1px; text-align:center;
+}
+body.dark  .game-title-center{color:#ffffff;}
+body.light .game-title-center{color:var(--fb);}
+.game-x-wrap{display:flex; justify-content:flex-end;}
+.game-body{
+  flex:1; overflow-y:auto;
+  display:flex; flex-direction:column;
+  align-items:center; padding:16px; position:relative;
+}
+
+/* ── BOARD & CARDS ── */
+.sw-board{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:clamp(10px,2.5vw,16px);
+  width:100%; max-width:560px; padding:4px;
+}
+.sw-card{aspect-ratio:1; perspective:1200px; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+.sw-inner{
+  width:100%; height:100%;
+  transition:transform 0.5s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d; position:relative;
+}
+.sw-card.flipped .sw-inner{transform:rotateY(180deg);}
+.sw-face{
+  position:absolute; inset:0;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.35);
+}
+.sw-back{background:var(--card-back); border:3px solid #9a7000;}
+.sw-cross-icon{font-size:clamp(30px,9vw,56px); color:rgba(255,255,255,0.85); text-shadow:2px 2px 6px rgba(0,0,0,.35);}
+.sw-front{background:linear-gradient(145deg,#f8f8f8 0%,#c0c0c0 100%); transform:rotateY(180deg); border:3px solid #909090;}
+.sw-engraved{
+  color:var(--purple);
+  font-family:'Inter',sans-serif;
+  font-size:clamp(13px,4vw,20px); font-weight:900;
+  letter-spacing:0.5px; text-align:center;
+  padding:6px; line-height:1.2;
+  text-shadow:1px 1px 0 rgba(255,255,255,0.9),-1px -1px 0 rgba(0,0,0,0.2);
+}
+
+/* ── RESULT OVERLAY ── */
+#resultOverlay{
+  position:absolute; inset:0; z-index:200;
+  display:none; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:32px 20px; text-align:center;
+}
+#resultOverlay.active{display:flex;}
+body.dark  #resultOverlay{background:rgba(13,13,13,0.97);}
+body.light #resultOverlay{background:rgba(249,249,248,0.97);}
+.result-badge{font-size:88px; margin-bottom:12px; line-height:1;}
+body.dark  .result-badge{color:#ffffff;}
+body.light .result-badge{color:var(--fb);}
+.result-title{font-size:clamp(28px,8vw,46px); font-weight:900; letter-spacing:-0.5px; margin-bottom:14px;}
+body.dark  .result-title{color:#ffffff;}
+body.light .result-title{color:#0d0d0d;}
+.result-verse{
+  font-family:'Inter',sans-serif;font-style:bold;
+  font-size:clamp:20px; font-weight:700;
+  line-height:1.8; max-width:440px; margin-bottom:6px;
+}
+body.dark  .result-verse{color:#f0e6c8;}
+body.light .result-verse{color:#1a1a1a;}
+.result-ref{font-size:16px; font-weight:700; letter-spacing:1px; margin-bottom:28px;}
+body.dark  .result-ref{color:#aaaaaa;}
+body.light .result-ref{color:var(--fb);}
+.result-btns{display:flex; flex-direction:column; gap:12px; width:100%; max-width:300px;}
+.r-btn{
+  padding:18px; background:var(--btn-bg);
+  border:2.5px solid var(--btn-bdr); color:var(--btn-col);
+  font-family:'Inter',sans-serif; font-size:17px;
+  font-weight:800; letter-spacing:0.3px;
+  border-radius:var(--radius); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; transition:background .2s; box-shadow:var(--shadow-btn);
+}
+.r-btn:hover{background:var(--btn-hvr);}
+
+/* ── CONFETTI ── */
+.confetti-piece{
+  position:fixed; z-index:99999; pointer-events:none;
+  border-radius:3px; animation:fall linear forwards;
+}
+@keyframes fall{
+  0%  {transform:translateY(-30px) rotate(0deg);   opacity:1;}
+  80% {opacity:1;}
+  100%{transform:translateY(105vh) rotate(900deg); opacity:0;}
+}
+
+/* ── BANNED SCREEN ── */
+#bannedScreen{
+  display:none; position:fixed; inset:0; z-index:99999;
+  background:#0d0d0d; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center; padding:30px;
+}
+#bannedScreen.show{display:flex;}
+#bannedScreen i  {font-size:80px; color:#ff4444; margin-bottom:22px;}
+#bannedScreen h2 {font-size:26px; font-weight:900; color:#ffffff; letter-spacing:1px; margin-bottom:14px;}
+#bannedScreen p  {font-family:'EB Garamond',serif; font-size:20px; color:#f0e6c8; max-width:400px; line-height:1.8;}
+</style>
+</head>
+<body class="light">
+
+<!-- VERSION BADGE -->
+<div class="version-badge">Powered by God's Grace ✝️</div>
+
+<!-- BANNED SCREEN -->
+<div id="bannedScreen">
+  <i class="fa-solid fa-ban"></i>
+  <h2>ACCESS RESTRICTED</h2>
+  <p id="bannedMsg">Your access has been restricted. Please contact the administrator.</p>
+</div>
+
+<!-- FELLOWSHIP TOP (before ticker) -->
+<div class="fellowship-bar pos-top" id="fellowshipTop">
+  <span id="fellowshipMsgTop" style="flex:1;"></span>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+    <button class="notif-wa-btn" onclick="openWhatsApp()"><i class="fa-brands fa-whatsapp"></i> JOIN</button>
+    <button class="notif-x" onclick="closeFellowship()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div id="sys-ticker"></div>
+
+<!-- SUPPORT BANNER TOP -->
+<div class="support-bar pos-top" id="supportTop">
+  <span id="supportMsgTop" style="flex:1;"></span>
+  <button class="notif-x" id="supportCloseTop" onclick="closeSupport()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<!-- HOME -->
+<div class="home">
+
+  <!-- INSTALL | CROSS | SHARE -->
+  <div class="app-action-row">
+    <button class="app-action-btn" id="installBtn" onclick="installApp()">
+      <i class="fa-solid fa-download"></i>INSTALL APP
+    </button>
+    <div class="home-icon"><i class="fa-solid fa-cross"></i></div>
+    <button class="app-action-btn" id="shareBtn" onclick="shareApp()">
+      <i class="fa-solid fa-share-nodes"></i>SHARE APP
+    </button>
+  </div>
+
+  <div class="home-title">DVBIBLE GAME</div>
+  <div class="home-sub">
+“And be renewed in the spirit of your mind;” Ephesians.4:23 (KJV).</div>
+
+  <!-- FELLOWSHIP CENTER (just after) -->
+  <div class="fellowship-bar pos-center" id="fellowshipCenter">
+    <span id="fellowshipMsgCenter" style="flex:1;"></span>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+      <button class="notif-wa-btn" onclick="openWhatsApp()"><i class="fa-brands fa-whatsapp"></i> JOIN</button>
+      <button class="notif-x" onclick="closeFellowship()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <!-- SUPPORT CENTER -->
+  <div class="support-bar pos-center" id="supportCenter" style="border-radius:var(--radius);margin-bottom:10px;">
+    <span id="supportMsgCenter" style="flex:1;"></span>
+    <button class="notif-x" onclick="closeSupport()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <!-- THREE MAIN BUTTONS -->
+  <div class="main-btns">
+  <button class="main-btn" id="themeBtn" onclick="toggleTheme()">
+   <i class="fa-solid fa-moon" id="themeIcon"></i>
+      <div class="btn-label"><span id="themeLabel">Switch to Dark Mode</span><small>Toggle light/dark display</small></div>
+    </button>
+    
+    <button class="main-btn" onclick="openModal('gameModal');initGame();">
+      <i class="fa-solid fa-gamepad"></i>
+      <div class="btn-label">Play The Game<small>Launch the memory challenge</small></div>
+    </button>
+    
+    <button class="main-btn" onclick="openModal('whyModal')">
+      <i class="fa-solid fa-book-open-reader"></i>
+      <div class="btn-label">Why I Created This Game<small>The purpose behind the brain trainer</small></div>
+    </button>
+    
+    <button class="main-btn" onclick="openDonationPage()" style="border-color: #1877F2;">
+  <i style="color: #1877F2;">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+  </i>
+  <div class="btn-label">
+    <span style="color: #1877F2;">Membership Page</span>
+    <small>Membership & Partnership Benefits</small>
+  
+</button>
+    
+ <button id="ministry-legal-btn" class="main-btn">
+  <i>
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+      <polyline points="10 9 9 9 8 9"></polyline>
+    </svg>
+  </i>
+  <div class="btn-label">
+    <span>Terms of Use/ Ownership</span>
+    <small>Privacy policy & Disclaimer</small>
+</button>
+</div>
+
+  <!-- DEV CARD -->
+  <div class="dev-card">
+    <div class="dev-avatar-wrap">
+      <img src="https://i.ibb.co/84dRKY60/Screenshot-20260103-005841.png" alt="Rev. Don Victor">
+    </div>
+    <div class="dev-name">Rev. Don Victor, PhD</div>
+    <div class="dev-role">Servant of God | Researcher | Theologian | Trainer | Full Stack Developer</div>
+    <hr class="dev-hr">
+    <div class="dev-links-row">
+      <a href="https://digitalgospel.donvictoracademy.net"       target="_blank" class="dev-link-pill"><i class="fa-solid fa-mobile-screen"></i>Digital Tract</a>
+      <a href="https://www.donvictoracademy.net" target="_blank" class="dev-link-pill"><i class="fa-solid fa-globe"></i> Portfolio</a>
+    </div>
+    <button class="about-dev-btn" onclick="openModal('devModal')">
+      <i class="fa-solid fa-id-card"></i> About The Developer
+    </button>
+    
+    <div class="icon-btns">
+      <a href="mailto:donvictorministry@gmail.com"   class="icon-btn" title="Email"    ><i class="fa-solid fa-envelope"></i></a>
+      <a href="tel:+2347035794649"              class="icon-btn" title="Phone"    ><i class="fa-solid fa-phone"></i></a>
+      <a href="https://facebook.com/Rev.DonVictor" target="_blank" class="icon-btn" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="https://chat.whatsapp.com/IULyDDuemQu7yj5S2cNmNU?mode=gi_t" target="_blank" class="icon-btn" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+  </div>
+  
+<div class="footer">JESUS IS THE WAY THE TRUTH AND THE LIFE</div>
+</div>
+
+<!-- FELLOWSHIP BOTTOM (fixed) -->
+<div class="fellowship-bar pos-bottom" id="fellowshipBottom">
+  <span id="fellowshipMsgBottom" style="flex:1;"></span>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+    <button class="notif-wa-btn" onclick="openWhatsApp()"><i class="fa-brands fa-whatsapp"></i> JOIN</button>
+    <button class="notif-x" onclick="closeFellowship()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+</div>
+
+<!-- SUPPORT BOTTOM  -->
+<div class="support-bar pos-bottom" id="supportBottom">
+  <span id="supportMsgBottom" style="flex:1;"></span>
+  <button class="notif-x" onclick="closeSupport()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<!-- ══ WHY MODAL ══ -->
+<div class="fs-modal" id="whyModal">
+  <div class="modal-bar">
+    <div class="modal-bar-title"><i class="fa-solid fa-book-open-reader" style="margin-right:8px;"></i>Why I Created This Game</div>
+    <button class="x-btn" onclick="closeModal('whyModal')"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="modal-body"><div class="modal-inner">
+    <div class="why-icon"><i class="fa-solid fa-cross"></i></div>
+    <div class="why-title">A Cognitive Sanctuary<br>for the Body of Christ</div>
+    <div class="why-body">
+      <p>Welcome, beloved. You might wonder what a memory game has to do with the gospel. This was not built as a mere distraction but as a cognitive sanctuary for the Body of Christ. In our rapidly moving digital world, our minds are under constant attack from noise, stress, and worldly distractions. Taking a brief and wholesome pause to focus your mind helps lower daily anxiety, center your thoughts, and bring your peace back to the Kingdom.</p>
+      <div class="scripture-block">
+        <i class="fa-solid fa-quote-left" style="margin-right:8px;opacity:.6;"></i>
+        Therefore, since we are surrounded by such a great cloud of witnesses, let us throw off everything that hinders and the sin that so easily entangles. And let us run with perseverance the race marked out for us.
+        <br><br><strong>— Hebrews 12:1 KJV</strong>
+      </div>
+      <p>By actively engaging your memory with the names of our biblical heroes and ultimately the powerful name of our LORD JESUS CHRIST, we are reminded of this very cloud of witnesses. Training your working memory directly enhances your everyday ability to retain Scripture, recall biblical history, and stay sharp when hearing and sharing the Gospel with others.</p>
+      <div class="sec-head"><i class="fa-solid fa-gamepad"></i> How to Play</div>
+      <p>You have exactly <strong>2 minutes (120 seconds)</strong> to find all matching pairs. Tap the gold cards to reveal the silver names beneath. Match every biblical hero before the countdown ends. The board reshuffles completely every single time you play.</p>
+      <div class="sec-head"><i class="fa-solid fa-trophy"></i> Rewards &amp; Spiritual Ranks</div>
+      <p>Match all cards before time expires and earn a spiritual rank based on your speed:</p>
+      <ul class="reward-list">
+        <li><i class="fa-solid fa-crown"></i><span>Abundant time remaining — <strong>Master Scholar Crown</strong></span></li>
+        <li><i class="fa-solid fa-shield-halved"></i><span>Moderate time remaining — <strong>Faithful Warrior Shield</strong></span></li>
+        <li><i class="fa-solid fa-scroll"></i><span>Finish just in time — <strong>Dedicated Reader Scroll</strong></span></li>
+      </ul>
+      <p>Train your mind. Remember the Word. Win souls.</p>
+      <div class="author-line"><i class="fa-solid fa-user-graduate"></i> Rev. Don Victor, PhD</div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ══ DEV MODAL ══ -->
+<div class="fs-modal" id="devModal">
+  <div class="modal-bar">
+    <div class="modal-bar-title"><i class="fa-solid fa-id-card" style="margin-right:8px;"></i>About The Developer</div>
+    <button class="x-btn" onclick="closeModal('devModal')"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  
+   <div class="modal-body"><div class="modal-inner" style="text-align:center;">
+    <div class="dev-m-avatar"><img src="https://i.ibb.co/84dRKY60/Screenshot-20260103-005841.png" alt="Rev. Don Victor, PhD"></div>
+    <div class="dev-m-name">Rev. Don Victor, PhD</div>
+    <div class="dev-m-sub">Servant of God | Researcher | Theologian | Trainer | Full Stack Developer</div>
+    <hr class="dev-m-hr">
+    <div class="dev-m-bio" style="text-align:left;">
+      <p>As a servant of God, theologian, and full stack developer, my work integrates scholarly research, theological insight, and technology to create platforms that foster knowledge, productivity, and spiritual growth.</p>
+      <p>I believe technology is more than the act of writing code. It is a transformative instrument for preaching the gospel, addressing complex human challenges, and expressing truth. Rooted in rigorous academic research at the doctoral level, I approach software engineering with clarity, precision, and intentionality. Whether I am developing mobile applications, architecting progressive web platforms, or studying Scripture, my mission remains unwavering. I am devoted to creating tools that address the complex challenges of organizations, strengthen the Body of Christ, and advance my higher calling of leading six million souls to Christ across six continents.</p>
+    </div>
+    
+<div class="dev-m-links">
+      <a href="https://soulwinnerapp.donvictoracademy.net"       target="_blank" class="dev-m-btn"><i class="fa-solid fa-mobile-screen"></i> Visit The Soul Winner's App</a>
+      <a href="https://www.donvictoracademy.ne" target="_blank" class="dev-m-btn"><i class="fa-solid fa-globe"></i> View My Portfolio</a>
+      <a href="mailto:donvictorministry@gmail.com"               class="dev-m-btn"><i class="fa-solid fa-envelope"></i> Send Me an Email</a>
+      <a href="https://chat.whatsapp.com/IULyDDuemQu7yj5S2cNmNU?mode=gi_t"   target="_blank" class="dev-m-btn"><i class="fa-brands fa-whatsapp"></i> Join My Community</a>
+      <a href="https://facebook.com/Rev.DonVictor"       target="_blank" class="dev-m-btn"><i class="fa-brands fa-facebook-f"></i> Follow on Facebook</a>
+    </div>
+  </div></div>
+</div>
+
+<!-- ══ GAME MODAL ══ -->
+<div class="fs-modal" id="gameModal">
+  <div class="modal-bar">
+    <div id="swTime"><i class="fa-solid fa-stopwatch"></i> 2:00</div>
+    <div class="game-title-center">DVBible Game</div>
+    <div class="game-x-wrap">
+      <button class="x-btn" onclick="closeModal('gameModal');stopGame();"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+  <div class="game-body">
+    <div class="sw-board" id="swBoard"></div>
+    <div id="resultOverlay">
+      <div class="result-badge" id="resultBadge"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-verse" id="resultVerse"></div>
+      <div class="result-ref"   id="resultRef"></div>
+      <div class="result-btns">
+        <button class="r-btn" onclick="initGame()"><i class="fa-solid fa-rotate-right"></i> Play Again</button>
+        <button class="r-btn" onclick="closeModal('gameModal');stopGame();"><i class="fa-solid fa-xmark"></i> Exit Game</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ══ CONFIG ══ */
+const APP_VERSION = 'v1.0.0';
+const GAS_URL     = 'https://script.google.com/macros/s/AKfycbxjOfn74IAeVOGIcskGJArl1r2QUZu5GEOff81k-uwN9BrIvxas2Qgg6gTpLV-E2Y6C/exec';
+
+/* ══ MANIFEST ══ */
+(()=>{
+  const m={
+    name:'DVBible Game',short_name:'DVBible',
+    description:'A memory game that sharpens your mind for the Word of God.',
+    start_url:'./',display:'standalone',
+    background_color:'#0d0d0d',theme_color:'#1877F2',
+    icons:[
+      {src:"https://i.ibb.co/sdrjkKCP/file-0000000090a471f483866da0ef8822ea.png/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231877F2'/%3E%3Ctext y='.88em' font-size='72' x='14' fill='white'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'},
+      {src:"https://i.ibb.co/sdrjkKCP/file-0000000090a471f483866da0ef8822ea.png/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231877F2'/%3E%3Ctext y='.88em' font-size='72' x='14' fill='white'%3E%E2%9C%9D%3C/text%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml'}
+    ]
+  };
+  const l=document.createElement('link');
+  l.rel='manifest';
+  l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
+  document.head.appendChild(l);
+})();
+
+/* ══ SERVICE WORKER ══ */
+(()=>{
+  const sw=`
+const CACHE='dvbible-v1';
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==CACHE).map(n=>caches.delete(n)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.url.includes('script.google.com')){e.respondWith(fetch(e.request));return;}
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{
+    return caches.open(CACHE).then(c=>{c.put(e.request,resp.clone());return resp;});
+  })));
+});`;
+  if('serviceWorker' in navigator)
+    navigator.serviceWorker.register(
+      URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))
+    ).catch(()=>{});
+})();
+
+/* ══ INDEXEDDB ══ */
+let db=null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const q=indexedDB.open('DVBibleDB',1);
+    q.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('cache'))d.createObjectStore('cache',{keyPath:'key'});};
+    q.onsuccess=e=>{db=e.target.result;res(db);};
+    q.onerror=()=>rej();
+  });
+}
+async function dbGet(k){
+  if(!db)await openDB();
+  return new Promise(r=>{
+    const t=db.transaction('cache','readonly');
+    const q=t.objectStore('cache').get(k);
+    q.onsuccess=()=>r(q.result?q.result.value:null);
+    q.onerror=()=>r(null);
+  });
+}
+async function dbSet(k,v){
+  if(!db)await openDB();
+  return new Promise(r=>{
+    const t=db.transaction('cache','readwrite');
+    t.objectStore('cache').put({key:k,value:v});
+    t.oncomplete=()=>r(); t.onerror=()=>r();
+  });
+}
+
+/* ══ USER IDENTITY ══ */
+function genID(){return 'usr_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);}
+let userID=localStorage.getItem('dvbUserID');
+if(!userID){userID=genID();localStorage.setItem('dvbUserID',userID);}
+const deviceID=navigator.userAgent.slice(0,30).replace(/\s/g,'_');
+const browser=navigator.userAgent.includes('Chrome')?'Chrome':navigator.userAgent.includes('Firefox')?'Firefox':navigator.userAgent.includes('Safari')?'Safari':'Other';
+
+/* ══ BATCH QUEUE ══ */
+let bQueue=[],bTimer=null;
+function queueBatch(action,payload){
+  bQueue.push({action,payload,ts:new Date().toISOString()});
+  clearTimeout(bTimer);
+  bTimer=setTimeout(flushBatch,3000);
+}
+async function flushBatch(){
+  if(!bQueue.length)return;
+  const items=[...bQueue];bQueue=[];
+  try{await gasPost({action:'BATCH',items});}
+  catch(e){bQueue=[...items,...bQueue];}
+}
+
+async function gasPost(payload, retries=2){
+  for(let i=0;i<=retries;i++){
+    try{
+      const r=await fetch(GAS_URL,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},   // ← THIS FIXES THE CORS BLOCK
+        body:JSON.stringify(payload)
+      });
+      if(r.ok)return await r.json();
+    }catch(e){if(i===retries)throw e;await new Promise(r=>setTimeout(r,1000*(i+1)));}
+  }
+}
+
+async function gasGet(p){
+  const r=await fetch(GAS_URL+'?'+new URLSearchParams(p));
+  return r.json();
+}
+
+/* ══ INIT APP ══ */
+async function initApp(){
+  await openDB();
+  try{
+    const res=await gasGet({action:'CHECK_BAN',userID});
+    if(res&&res.banned){
+      document.getElementById('bannedMsg').textContent=res.note||'Your access has been restricted.';
+      document.getElementById('bannedScreen').classList.add('show');
+      return;
+    }
+  }catch(e){}
+  queueBatch('REGISTER_USER',{
+    userID,deviceID,browser,
+    joinDate:localStorage.getItem('dvbJoin')||new Date().toISOString(),
+    lastSeen:new Date().toISOString()
+  });
+  if(!localStorage.getItem('dvbJoin'))localStorage.setItem('dvbJoin',new Date().toISOString());
+  await loadTicker();
+  await loadBanners();
+}
+
+/* ══ TICKER — GAS only, no hardcoded fallback ══ */
+function initTicker(items){
+  const container=document.getElementById('sys-ticker');
+  if(!items||!items.length)return;
+  container.style.display='block';
+  let index=0;
+  function showNext(){
+    container.innerHTML='';
+    const item=items[index];
+    const div=document.createElement('div');
+    div.className='ticker-item';
+    div.innerHTML=item.msg;
+    div.style.backgroundColor=item.bg   ||'#1877F2';
+    div.style.color           =item.color||'#fff';
+    container.style.background=item.bg  ||'#1877F2';
+    container.appendChild(div);
+    void div.offsetWidth;
+    div.classList.add('ticker-active');
+    setTimeout(()=>{
+      div.classList.remove('ticker-active');
+      div.classList.add('ticker-exit');
+      index=(index+1)%items.length;
+      setTimeout(showNext,500);
+    },item.speed||4000);
+  }
+  showNext();
+}
+
+async function loadTicker(){
+  try{
+    const ck='ticker_cache';
+    let c=await dbGet(ck);
+    if(c&&Date.now()-c.ts<300000){
+      initTicker(c.items); return;
+    }
+    const res=await gasGet({action:'GET_TICKER'});
+    if(res&&res.items&&res.items.length){
+      await dbSet(ck,{items:res.items,ts:Date.now()});
+      initTicker(res.items);
+    }
+  }catch(e){}
+}
+
+/* ══ BANNERS — fellowship ONE location, support ONE location ══ */
+let fellowshipLink='';
+
+function closeFellowship(){
+  ['fellowshipTop','fellowshipCenter','fellowshipBottom'].forEach(id=>document.getElementById(id).classList.remove('show'));
+}
+function closeSupport(){
+  ['supportTop','supportCenter','supportBottom'].forEach(id=>document.getElementById(id).classList.remove('show'));
+}
+function openWhatsApp(){
+  if(fellowshipLink)window.open(fellowshipLink,'_blank');
+}
+
+async function loadBanners(){
+  try{
+    const res=await gasGet({action:'GET_BANNERS'});
+    if(!res)return;
+
+    // ── Fellowship — exactly ONE location ──
+    if(res.fellowship&&res.fellowship.active){
+      const f  =res.fellowship;
+      fellowshipLink=f.waLink||'';
+      const txt=f.text||'';
+      const loc=(f.location||'top').toLowerCase().trim();
+      if(loc==='top'){
+        document.getElementById('fellowshipMsgTop').innerHTML=txt;
+        document.getElementById('fellowshipTop').classList.add('show');
+      }else if(loc==='center'){
+        document.getElementById('fellowshipMsgCenter').innerHTML=txt;
+        document.getElementById('fellowshipCenter').classList.add('show');
+      }else if(loc==='bottom'){
+        document.getElementById('fellowshipMsgBottom').innerHTML=txt;
+        document.getElementById('fellowshipBottom').classList.add('show');
+      }
+    }
+
+    // ── Support — exactly ONE location ──
+    if(res.support&&res.support.active){
+      const s  =res.support;
+      const txt=s.url
+        ?`${s.text} <a href="${s.url}" target="_blank" style="color:inherit;font-weight:800;text-decoration:underline;margin-left:8px;">LEARN MORE</a>`
+        :s.text||'';
+      const loc=(s.location||'bottom').toLowerCase().trim();
+      let msgEl,barEl,closeEl;
+      if(loc==='top'){
+        msgEl='supportMsgTop';barEl='supportTop';closeEl='supportCloseTop';
+      }else if(loc==='center'){
+        msgEl='supportMsgCenter';barEl='supportCenter';closeEl=null;
+      }else{
+        msgEl='supportMsgBottom';barEl='supportBottom';closeEl=null;
+      }
+      document.getElementById(msgEl).innerHTML=txt;
+      document.getElementById(barEl).classList.add('show');
+      if(s.closeable==='NO'&&closeEl)document.getElementById(closeEl).style.display='none';
+    }
+  }catch(e){}
+}
+
+/* ══ THEME ══ */
+let dark=false;
+function toggleTheme(){
+  dark=!dark;
+  document.body.className=dark?'dark':'light';
+  document.getElementById('themeIcon').className=dark?'fa-solid fa-moon':'fa-solid fa-sun';
+  document.getElementById('themeLabel').textContent=dark?'Switch to Light Mode':'Switch to Dark Mode';
+}
+
+/* ══ MODALS ══ */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+/* ══ INSTALL / SHARE ══ */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;});
+async function installApp(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+}
+async function shareApp(){
+  const data={title:'DVBible Game — A memory Brain Trainer',text:'Renew and train your mind with the Word of God! A powerful and spiritually uplifting memory game built by the servant of God Rev. Don Victor, PhD.',url:window.location.href};
+  if(navigator.share){try{await navigator.share(data);}catch(e){}}
+  else{
+    try{
+      await navigator.clipboard.writeText(window.location.href);
+      const btn=document.getElementById('shareBtn');
+      const orig=btn.innerHTML;
+      btn.innerHTML='<i class="fa-solid fa-check"></i>COPIED!';
+      setTimeout(()=>{btn.innerHTML=orig;},2000);
+    }catch(e){}
+  }
+}
+
+/* ══ AUDIO ══ */
+let actx=null;
+function getCtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();return actx;}
+function playFlip(){
+  const ctx=getCtx();
+  const b=ctx.createBuffer(1,ctx.sampleRate*0.07,ctx.sampleRate);
+  const d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.8);
+  const s=ctx.createBufferSource(),g=ctx.createGain();
+  s.buffer=b;s.connect(g);g.connect(ctx.destination);g.gain.value=0.7;s.start();
+}
+function playMatch(){
+  const ctx=getCtx();
+  [{f:880,t:0,l:.15},{f:1108,t:.1,l:.15},{f:1318,t:.2,l:.25},{f:1760,t:.32,l:.3}].forEach(n=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.value=n.f;
+    const t=ctx.currentTime+n.t;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.38,t+0.01);g.gain.exponentialRampToValueAtTime(0.001,t+n.l);
+    o.start(t);o.stop(t+n.l);
+  });
+}
+function playMiss(){
+  const ctx=getCtx();
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=140;
+  g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(0.45,ctx.currentTime+0.01);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.32);
+  o.start(ctx.currentTime);o.stop(ctx.currentTime+0.32);
+}
+function playVictory(){
+  const ctx=getCtx();
+  [523,659,784,1047,1319,1047,1319,1568].forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.value=f;
+    const t=ctx.currentTime+i*0.13;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.42,t+0.01);g.gain.exponentialRampToValueAtTime(0.001,t+0.28);
+    o.start(t);o.stop(t+0.28);
+  });
+}
+function playGameOver(){
+  const ctx=getCtx();
+  [440,330,260,180].forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=f;
+    const t=ctx.currentTime+i*0.2;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.48,t+0.01);g.gain.exponentialRampToValueAtTime(0.001,t+0.32);
+    o.start(t);o.stop(t+0.32);
+  });
+}
+
+/* ══ CONFETTI ══ */
+function launchConfetti(){
+  const cols=['#ffd700','#c0c0c0','#4a0e4e','#1877F2','#ff6b6b','#51cf66','#ff922b'];
+  for(let i=0;i<90;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    const dur=1.6+Math.random()*1.6,sz=8+Math.random()*10;
+    p.style.cssText=`left:${Math.random()*100}vw;top:-30px;background:${cols[i%cols.length]};width:${sz}px;height:${sz*(0.6+Math.random()*0.8)}px;border-radius:${Math.random()>0.4?'50%':'3px'};animation-duration:${dur}s;animation-delay:${Math.random()*0.8}s;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),(dur+0.9)*1000);
+  }
+}
+
+/* ══ GAME ══ */
+const CHARS=['JESUS','MOSES','DAVID','ESTHER','ELIJAH','PETER','PAUL','MARY'];
+let flipped=[],matched=0,locked=false,timeLeft=120,timerId=null,gameStart=null;
+function shuffle(a){let i=a.length,r;while(i){r=Math.floor(Math.random()*i--);[a[i],a[r]]=[a[r],a[i]];}return a;}
+function fmt(s){return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
+
+const board=document.getElementById('swBoard');
+const timeEl=document.getElementById('swTime');
+const resultOv=document.getElementById('resultOverlay');
+
+function initGame(){
+  board.innerHTML='';
+  resultOv.classList.remove('active');
+  flipped=[];matched=0;locked=false;timeLeft=120;
+  timeEl.innerHTML=`<i class="fa-solid fa-stopwatch"></i> ${fmt(timeLeft)}`;
+  timeEl.style.color='';
+  clearInterval(timerId);
+  gameStart=Date.now();
+  timerId=setInterval(tick,1000);
+  shuffle([...CHARS,...CHARS]).forEach(name=>{
+    const c=document.createElement('div');
+    c.className='sw-card';
+    c.innerHTML=`<div class="sw-inner"><div class="sw-back sw-face"><i class="fa-solid fa-cross sw-cross-icon"></i></div><div class="sw-front sw-face"><span class="sw-engraved">${name}</span></div></div>`;
+    c.onclick=()=>flipCard(c,name);
+    board.appendChild(c);
+  });
+  queueBatch('GAME_START',{userID,deviceID,timestamp:new Date().toISOString()});
+}
+function stopGame(){clearInterval(timerId);}
+function tick(){
+  timeLeft--;
+  timeEl.innerHTML=`<i class="fa-solid fa-stopwatch"></i> ${fmt(timeLeft)}`;
+  if(timeLeft<=10)timeEl.style.color='#ff4444';
+  if(timeLeft<=0) endGame(false);
+}
+function flipCard(card,name){
+  if(locked||card.classList.contains('flipped')||flipped.length===2)return;
+  card.classList.add('flipped');playFlip();
+  flipped.push({el:card,val:name});
+  if(flipped.length===2){
+    locked=true;
+    if(flipped[0].val===flipped[1].val){
+      playMatch();matched+=2;flipped=[];locked=false;
+      if(matched===16)setTimeout(()=>endGame(true),400);
+    }else{
+      playMiss();
+      setTimeout(()=>{flipped.forEach(c=>c.el.classList.remove('flipped'));flipped=[];locked=false;},900);
+    }
+  }
+}
+const WIN_V=[
+  {t:'Well done, thou good and faithful servant.',r:'Matthew 25:21 KJV'},
+  {t:'I can do all things through Christ which strengtheneth me.',r:'Philippians 4:13 KJV'},
+  {t:'The LORD thy God in the midst of thee is mighty; he will save.',r:'Zephaniah 3:17 KJV'}
+];
+const LOSS_V=[
+  {t:'I can do all things through Christ which strengtheneth me.',r:'Philippians 4:13 KJV'},
+  {t:'Let us not be weary in well doing: for in due season we shall reap.',r:'Galatians 6:9 KJV'},
+  {t:'Be strong and of a good courage; be not afraid.',r:'Joshua 1:9 KJV'}
+];
+function endGame(won){
+  clearInterval(timerId);
+  const timeTaken=Math.round((Date.now()-gameStart)/1000);
+  const badge=won?(timeLeft>40?'fa-crown':timeLeft>20?'fa-shield-halved':'fa-scroll'):'fa-hourglass-half';
+  const rank =won?(timeLeft>40?'MASTER SCHOLAR':timeLeft>20?'FAITHFUL WARRIOR':'DEDICATED READER'):null;
+  const pool =won?WIN_V:LOSS_V;
+  const v    =pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('resultBadge').innerHTML=`<i class="fa-solid ${badge}"></i>`;
+  document.getElementById('resultTitle').textContent=won?`HALLELUJAH! — ${rank}`:'TIME UP!';
+  document.getElementById('resultVerse').textContent=`"${v.t}"`;
+  document.getElementById('resultRef').textContent=`— ${v.r}`;
+  resultOv.classList.add('active');
+  if(won){playVictory();launchConfetti();}else{playGameOver();}
+  queueBatch('GAME_END',{userID,deviceID,won,timeTaken,rank:rank||'none',timeLeft,timestamp:new Date().toISOString()});
+}
+
+/* ══ BOOT ══ */
+document.addEventListener('click',()=>{if(actx&&actx.state==='suspended')actx.resume();},{once:true});
+initApp();
+</script>
+
+<script>
+(function(window, document) {
+  "use strict";
+
+  const CONFIG = {
+    API_URL: "https://script.google.com/macros/s/AKfycbxBcxO1MiznLNcT6Hdtqx64cY1xWrCL5rEQOr1EDXLrLN1HophHKN2wFskf6RUPVIho/exec",
+    BATCH_SIZE: 10,
+    SYNC_INTERVAL_MS: 30000,
+    HEARTBEAT_INTERVAL_MS: 60000,
+    GEO_CACHE_TTL_MS: 86400000,
+    DB_NAME: "MinistryTelemetryDB",
+    DB_VERSION: 1,
+    STORE_NAME: "events_queue"
+  };
+
+  const Utils = {
+    uuid: function() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
+    getUserId: function() {
+      let uid = localStorage.getItem("min_sys_uid");
+      if (!uid) {
+        uid = "USR-" + this.uuid().substring(0, 13).toUpperCase();
+        localStorage.setItem("min_sys_uid", uid);
+      }
+      return uid;
+    },
+    getSessionId: function() {
+      let sid = sessionStorage.getItem("min_sys_sid");
+      if (!sid) {
+        sid = "SESS-" + this.uuid().substring(0, 9).toUpperCase();
+        sessionStorage.setItem("min_sys_sid", sid);
+      }
+      return sid;
+    },
+    getDeviceType: function() {
+      const ua = navigator.userAgent;
+      if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "Tablet";
+      if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "Mobile";
+      return "Desktop";
+    }
+  };
+
+  const Database = {
+    db: null,
+    init: function() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(CONFIG.DB_NAME, CONFIG.DB_VERSION);
+        request.onupgradeneeded = function(event) {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(CONFIG.STORE_NAME)) {
+            db.createObjectStore(CONFIG.STORE_NAME, { keyPath: "id", autoIncrement: true });
+          }
+        };
+        request.onsuccess = function(event) {
+          Database.db = event.target.result;
+          resolve();
+        };
+        request.onerror = function(event) {
+          reject(event.target.error);
+        };
+      });
+    },
+    addEvent: function(eventData) {
+      if (!this.db) return Promise.reject("DB not initialized");
+      return new Promise((resolve, reject) => {
+        const transaction = this.db.transaction([CONFIG.STORE_NAME], "readwrite");
+        const store = transaction.objectStore(CONFIG.STORE_NAME);
+        const request = store.add(eventData);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    },
+    getEvents: function(limit) {
+      if (!this.db) return Promise.reject("DB not initialized");
+      return new Promise((resolve, reject) => {
+        const transaction = this.db.transaction([CONFIG.STORE_NAME], "readonly");
+        const store = transaction.objectStore(CONFIG.STORE_NAME);
+        const request = store.openCursor();
+        const results = [];
+        request.onsuccess = function(event) {
+          const cursor = event.target.result;
+          if (cursor && results.length < limit) {
+            results.push({ key: cursor.key, value: cursor.value });
+            cursor.continue();
+          } else {
+            resolve(results);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    deleteEvents: function(keys) {
+      if (!this.db) return Promise.reject("DB not initialized");
+      return new Promise((resolve, reject) => {
+        const transaction = this.db.transaction([CONFIG.STORE_NAME], "readwrite");
+        const store = transaction.objectStore(CONFIG.STORE_NAME);
+        keys.forEach(key => store.delete(key));
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      });
+    }
+  };
+
+  const Telemetry = {
+    geoData: null,
+    isActive: true,
+    lastActiveTime: Date.now(),
+    activeDuration: 0,
+    maxScrollDepth: 0,
+    
+    init: function() {
+      this.bindEvents();
+      this.fetchGeo().then(() => {
+        this.logEvent("pageView");
+      });
+      setInterval(() => this.logHeartbeat(), CONFIG.HEARTBEAT_INTERVAL_MS);
+      setInterval(() => Network.syncQueue(), CONFIG.SYNC_INTERVAL_MS);
+    },
+    bindEvents: function() {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          this.isActive = true;
+          this.lastActiveTime = Date.now();
+        } else {
+          this.isActive = false;
+          this.activeDuration += Math.floor((Date.now() - this.lastActiveTime) / 1000);
+          this.logEvent("visibilityHidden");
+          Network.syncQueue(true);
+        }
+      });
+      window.addEventListener("scroll", () => {
+        const depth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+        if (depth > this.maxScrollDepth) {
+          this.maxScrollDepth = depth > 100 ? 100 : depth;
+        }
+      }, { passive: true });
+      window.addEventListener("beforeunload", () => {
+        this.activeDuration += Math.floor((Date.now() - this.lastActiveTime) / 1000);
+        this.logEvent("pageExit");
+        Network.syncQueue(true);
+      });
+      window.addEventListener("error", (e) => {
+        this.logEvent("jsError", { errorMessage: e.message, filename: e.filename, lineno: e.lineno });
+      });
+    },
+    fetchGeo: function() {
+      return new Promise((resolve) => {
+        const cached = localStorage.getItem("min_sys_geo");
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Date.now() - parsed.timestamp < CONFIG.GEO_CACHE_TTL_MS) {
+              this.geoData = parsed.data;
+              return resolve();
+            }
+          } catch(e) {}
+        }
+        fetch("https://ipapi.co/json/")
+          .then(res => res.json())
+          .then(data => {
+            this.geoData = { ip: data.ip, country: data.country_name, city: data.city, isp: data.org };
+            localStorage.setItem("min_sys_geo", JSON.stringify({ timestamp: Date.now(), data: this.geoData }));
+            resolve();
+          })
+          .catch(() => {
+            this.geoData = { ip: "unknown", country: "unknown", city: "unknown", isp: "unknown" };
+            resolve();
+          });
+      });
+    },
+    logEvent: function(eventType, extraData = {}) {
+      if (!this.geoData) return;
+      
+      const payload = {
+        userId: Utils.getUserId(),
+        sessionId: Utils.getSessionId(),
+        type: eventType,
+        timestamp: new Date().toISOString(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        deviceType: Utils.getDeviceType(),
+        durationMinutes: parseFloat((this.activeDuration / 60).toFixed(2)),
+        scrollDepth: this.maxScrollDepth,
+        geo: this.geoData,
+        extra: extraData
+      };
+
+      Database.addEvent(payload).then(() => {
+        Database.getEvents(100).then(events => {
+          if (events.length >= CONFIG.BATCH_SIZE) {
+            Network.syncQueue();
+          }
+        });
+      }).catch(console.error);
+    },
+    logHeartbeat: function() {
+      if (this.isActive) {
+        this.activeDuration += Math.floor((Date.now() - this.lastActiveTime) / 1000);
+        this.lastActiveTime = Date.now();
+        this.logEvent("heartbeat");
+      }
+    }
+  };
+
+  const Network = {
+    isSyncing: false,
+    syncQueue: function(forceSync = false) {
+      if (this.isSyncing) return;
+      this.isSyncing = true;
+
+      Database.getEvents(forceSync ? 50 : CONFIG.BATCH_SIZE).then(records => {
+        if (records.length === 0) {
+          this.isSyncing = false;
+          return;
+        }
+
+        const keys = records.map(r => r.key);
+        const data = records.map(r => r.value);
+
+        const payload = JSON.stringify({ action: "batchTelemetry", data: data });
+
+        const fetchOptions = {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: payload
+        };
+
+        if (forceSync && "keepalive" in new Request("")) {
+          fetchOptions.keepalive = true;
+        }
+
+        fetch(CONFIG.API_URL, fetchOptions)
+          .then(res => {
+            if (res.ok || res.type === 'opaque') {
+              Database.deleteEvents(keys).finally(() => {
+                this.isSyncing = false;
+              });
+            } else {
+              this.isSyncing = false;
+            }
+          })
+          .catch(() => {
+            this.isSyncing = false;
+          });
+      });
+    }
+  };
+
+  const TickerUI = {
+    init: function() {
+      this.fetchTicker();
+      setInterval(() => this.fetchTicker(), 300000); 
+    },
+    fetchTicker: function() {
+      const payload = JSON.stringify({ action: "getTicker" });
+      fetch(CONFIG.API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: payload
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === "success" && response.data) {
+          this.render(response.data);
+        } else {
+          this.remove();
+        }
+      })
+      .catch(() => {}); 
+    },
+    render: function(data) {
+      let container = document.getElementById("min-sys-ticker");
+      if (!container) {
+        this.injectStyles();
+        container = document.createElement("div");
+        container.id = "min-sys-ticker";
+        document.body.appendChild(container);
+      }
+      
+      container.style.backgroundColor = data.bgColor || "#1877F2";
+      container.style.color = data.textColor || "#FFFFFF";
+      
+      container.innerHTML = `
+        <div class="min-sys-ticker-wrap">
+          <div class="min-sys-ticker-content" style="color: ${data.textColor || '#FFFFFF'}">
+            ${data.message}
+          </div>
+        </div>
+        <button class="min-sys-ticker-close" onclick="document.getElementById('min-sys-ticker').style.display='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      `;
+    },
+    remove: function() {
+      const container = document.getElementById("min-sys-ticker");
+      if (container) container.remove();
+    },
+    injectStyles: function() {
+      if (document.getElementById("min-sys-ticker-styles")) return;
+      const css = `
+        #min-sys-ticker {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 40px;
+          z-index: 2147483647;
+          display: flex;
+          align-items: center;
+          font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+          overflow: hidden;
+        }
+        .min-sys-ticker-wrap {
+          flex: 1;
+          overflow: hidden;
+          white-space: nowrap;
+          position: relative;
+          height: 100%;
+          display: flex;
+          align-items: center;
+        }
+        .min-sys-ticker-content {
+          display: inline-block;
+          padding-left: 100%;
+          animation: minSysTickerScroll 25s linear infinite;
+        }
+        @keyframes minSysTickerScroll {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-100%, 0, 0); }
+        }
+        .min-sys-ticker-close {
+          background: transparent;
+          border: none;
+          color: inherit;
+          cursor: pointer;
+          height: 100%;
+          padding: 0 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+        }
+        .min-sys-ticker-close:hover {
+          opacity: 1;
+        }
+        @media (max-width: 600px) {
+          #min-sys-ticker { font-size: 17px; height: 36px; }
+          .min-sys-ticker-content { animation-duration: 86s; }
+        }
+      `;
+      const style = document.createElement("style");
+      style.id = "min-sys-ticker-styles";
+      style.textContent = css;
+      document.head.appendChild(style);
+    }
+  };
+
+  Database.init()
+    .then(() => {
+      Telemetry.init();
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => TickerUI.init());
+      } else {
+        TickerUI.init();
+      }
+    })
+    .catch(console.error);
+
+  window.MinistrySystem = {
+    triggerSync: () => Network.syncQueue(true),
+    getUserId: () => Utils.getUserId()
+  };
+
+})(window, document);
+</script>
+
+<script>
+(function() {
+  "use strict";
+
+  const CONFIG = {
+    brandColor: "#1877F2",
+    bgWhite: "#FFFFFF",
+    textColor: "#1c1e21",
+    textSize: "16px",
+    whatsappNumber: "2348086590253", 
+    whatsappMessage: "Hello, I am contacting you regarding DVGame terms and resources."
+  };
+
+  const LEGAL_CONTENT = `
+    <div class="minLegalSection">
+      <h3>Ownership</h3>
+      <p>DVBible Game is created, owned, and operated by its developer, Rev. Don Victor, PhD. All content, design, and functionality within the App are proprietary and protected by applicable intellectual property laws. You may not copy, modify, reverse engineer, or misuse any part of the App without written permission.</p>
+    </div>
+    
+    <div class="minLegalSection">
+      <h3>Fair Use</h3>
+      <p>This ecosystem is intentionally different. There are no algorithms and no worldly advertisements. By joining, you agree to uphold respect, prayer, and edification. Together, we protect this space. You also agree to use the app responsibly and not to engage in any activity that may disrupt its performance, compromise its security, or negatively affect other users' experience.</p>
+    </div>
+
+    <div class="minLegalSection">
+      <h3>Access Control</h3>
+      <p>To maintain a stable and secure environment, we reserve the right to restrict, suspend, or terminate access to the App at our sole discretion, particularly in cases of misuse or violation of these Terms.</p>
+    </div>
+
+    <div class="minLegalSection">
+      <h3>Proper Conduct</h3>
+      <p>You agree not to attempt unauthorized access to any part of the App or its systems.</p>
+      <p>You agree not to interfere with the App's operation, security, or performance.</p>
+      <p>You agree not to clone, reproduce, decompile, or attempt to derive the App's underlying source code or structure.</p>
+      <p>You agree not to use the App for any unlawful purpose.</p>
+      <p>Any violation of these terms may result in an immediate and permanent ban.</p>
+    </div>
+
+    <div class="minLegalSection">
+      <h3>Disclaimer of Warranties</h3>
+      <p>The App is provided "as is" and "as available," without any warranties of any kind, express or implied. While we strive for reliability, we do not guarantee uninterrupted or disruption free service. You use the App at your own discretion.</p>
+    </div>
+
+    <div class="minLegalSection">
+      <h3>Limitation of Liability</h3>
+      <p>To the fullest extent permitted by law, the Developer is not liable for any direct or indirect consequences resulting from the use of the App.</p>
+    </div>
+
+    <div class="minLegalSection">
+      <h3>Governing Law</h3>
+      <p>These Terms are governed by the laws of the Federal Republic of Nigeria, specifically those of Akwa Ibom State. Any disputes arising from these Terms or your use of the App shall be resolved in the courts of Nigeria. Notwithstanding the foregoing, the Developer reserves the exclusive right to take legal action against any individual or entity engaging in unauthorized or unlawful activities in violation of these Terms in their country of origin or residence, where applicable.</p>
+    </div>
+
+    <div class="minLegalSection">
+      <h3>Age Restriction</h3>
+      <p>By using DVBible Game, you confirm that you are at least 18 years of age. If you are under 18, you confirm that you have obtained parental or guardian consent to use the App in accordance with the laws of your jurisdiction.</p>
+    </div>
+
+    <div class="minLegalSection" style="margin-bottom: 20px;">
+      <h3>Contact Information</h3>
+      <p>For questions, concerns, or inquiries regarding these Terms, you may contact:</p>
+      <a href="https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(CONFIG.whatsappMessage)}" target="_blank" class="minBtnWhatsapp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Contact Developer via WhatsApp
+      </a>
+    </div>
+
+    <button id="minShowMoreBtn" class="minBtnShowMore">Read Privacy Policy & More</button>
+
+    <div id="minHiddenContent" style="display: none;">
+      <div class="minLegalHeaderDivider">
+        <h2>Privacy Policy</h2>
+      </div>
+
+      <div class="minLegalSection">
+        <h3>Information Collection</h3>
+        <p>We do not store or transmit your log data to external servers. Your privacy is fully respected. To help DVGame run smoothly, securely, and efficiently, we may automatically collect limited technical information from the devices you use. This includes app performance metrics such as load times and crash reports, device and system information, section usage, logged metrics, and session activity.</p>
+        <p>This information is used solely to maintain, analyze, and improve the App experience and reach. It may also be used in aggregated or anonymized form to support app development and enhancements.</p>
+      </div>
+
+      <div class="minLegalSection">
+        <h3>Divine Inspiration & Global Reach</h3>
+        <p>The platform operates under divine inspiration and aims to serve millions globally. We reserve the right to update these terms at any time to better serve our community and align with global digital standards.</p>
+      </div>
+
+      <div class="minLegalSection">
+        <h3>Changes to This Policy</h3>
+        <p>This Privacy Policy may be updated as the App improves or as legal requirements change. Continued use of the App after updates constitutes acceptance of the revised policy.</p>
+      </div>
+    </div>
+  `;
+
+  function injectStyles() {
+    if (document.getElementById('minLegalStyles')) return;
+    const css = `
+      #minFullscreenModal {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: ${CONFIG.bgWhite}; z-index: 999999; display: flex; flex-direction: column;
+        transform: translateY(100vh); opacity: 0; visibility: hidden;
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+        font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+      }
+      #minFullscreenModal.active { transform: translateY(0); opacity: 1; visibility: visible; }
+      
+      .minModalHeader {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 24px; background: ${CONFIG.bgWhite};
+        border-bottom: 1px solid #e4e6eb; position: sticky; top: 0; z-index: 10;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .minModalHeader h1 { margin: 0; font-size: 20px; font-weight: 800; color: ${CONFIG.brandColor}; }
+      
+      .minModalCloseBtn {
+        background: transparent; border: none; width: 40px; height: 40px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #606770; border-radius: 50%;
+        transition: background 0.2s, color 0.2s;
+      }
+      .minModalCloseBtn:hover { background: #f0f2f5; color: #1c1e21; }
+
+      .minModalBody {
+        flex: 1; overflow-y: auto; padding: 24px 24px 60px 24px;
+        color: ${CONFIG.textColor}; font-size: ${CONFIG.textSize}; line-height: 1.6;
+      }
+      
+      .minLegalSection { margin-bottom: 28px; }
+      .minLegalSection h3 { margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: ${CONFIG.brandColor}; }
+      .minLegalSection p { margin: 0 0 12px 0; }
+      
+      .minLegalHeaderDivider { margin: 30px 0 24px 0; padding-bottom: 8px; border-bottom: 2px solid ${CONFIG.brandColor}; }
+      .minLegalHeaderDivider h2 { margin: 0; font-size: 22px; font-weight: 800; color: #050505; }
+
+      .minBtnWhatsapp {
+        background: #25D366; color: ${CONFIG.bgWhite}; border: none;
+        padding: 14px 20px; border-radius: 8px; font-size: ${CONFIG.textSize}; font-weight: 600;
+        cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+        text-decoration: none; transition: background 0.2s, transform 0.1s;
+        margin-top: 10px; box-shadow: 0 4px 6px rgba(37, 211, 102, 0.2);
+      }
+      .minBtnWhatsapp:hover { background: #20bd5a; }
+      .minBtnWhatsapp:active { transform: scale(0.98); }
+
+      .minBtnShowMore {
+        background: transparent; color: ${CONFIG.brandColor}; border: 1.5px solid ${CONFIG.brandColor};
+        padding: 14px 20px; border-radius: 8px; font-size: ${CONFIG.textSize}; font-weight: 700;
+        cursor: pointer; transition: all 0.2s; text-align: center; width: 100%; display: block;
+        margin-top: 32px;
+      }
+      .minBtnShowMore:hover { background: #f0f7ff; }
+    `;
+    const style = document.createElement('style');
+    style.id = 'minLegalStyles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  function buildFullscreenModal() {
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'minFullscreenModal';
+
+    modalContainer.innerHTML = `
+      <div class="minModalHeader">
+        <h1>Terms of Use</h1>
+        <button class="minModalCloseBtn" id="minCloseFullscreen" aria-label="Close document">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="minModalBody">
+        ${LEGAL_CONTENT}
+      </div>
+    `;
+    
+    document.body.appendChild(modalContainer);
+
+    const closeBtn = document.getElementById('minCloseFullscreen');
+    const showMoreBtn = document.getElementById('minShowMoreBtn');
+    const hiddenContent = document.getElementById('minHiddenContent');
+    
+    modalContainer.offsetHeight; 
+    modalContainer.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    function destroyModal() {
+      modalContainer.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (document.body.contains(modalContainer)) {
+          document.body.removeChild(modalContainer);
+        }
+      }, 300);
+    }
+
+    closeBtn.addEventListener('click', destroyModal);
+
+    if(showMoreBtn && hiddenContent) {
+      showMoreBtn.addEventListener('click', function() {
+        hiddenContent.style.display = 'block';
+        this.style.display = 'none';
+        
+        // Optional: smoothly scroll down just a bit to show new content is there
+        document.querySelector('.minModalBody').scrollBy({ top: 150, behavior: 'smooth' });
+      });
+    }
+  }
+
+  const triggerBtn = document.getElementById('ministry-legal-btn');
+  if (triggerBtn) {
+    triggerBtn.addEventListener('click', function() {
+      injectStyles();
+      buildFullscreenModal();
+    });
+  }
+
+})();
+</script>
+
+<script>
+  function openDonationPage() {
+    // Replace this URL with the actual GitHub Pages link to your new landing page
+    const landingPageUrl = "https://your-custom-domain.com/support"; 
+    window.open(landingPageUrl, '_blank');
+  }
+</script>
+
+</body>
+</html>

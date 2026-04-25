@@ -1204,10 +1204,9 @@ function endGame(won){
 document.addEventListener('click',()=>{if(actx&&actx.state==='suspended')actx.resume();},{once:true});
 initApp();
 </script>
-
 <script>
-
-const CONFIG = {
+(function(window, document) {
+  const CONFIG = {
     API_URL: "https://script.google.com/macros/s/AKfycbxBcxO1MiznLNcT6Hdtqx64cY1xWrCL5rEQOr1EDXLrLN1HophHKN2wFskf6RUPVIho/exec",
     BATCH_SIZE: 10,
     SYNC_INTERVAL_MS: 30000,
@@ -1354,77 +1353,49 @@ const CONFIG = {
     },
     
     fetchGeo: function() {
-      return new Promise(async (resolve) => {
-        // 1. Check Local Cache First
-        const cached = localStorage.getItem("min_sys_geo");
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Date.now() - parsed.timestamp < CONFIG.GEO_CACHE_TTL_MS) {
-              this.geoData = parsed.data;
-              return resolve();
-            }
-          } catch(e) {}
-        }
+      return new Promise(async (resolve) => {
+        const cached = localStorage.getItem("min_sys_geo");
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Date.now() - parsed.timestamp < CONFIG.GEO_CACHE_TTL_MS) {
+              this.geoData = parsed.data;
+              return resolve();
+            }
+          } catch(e) {}
+        }
 
-        // Helper to standardize payload, save to cache, and resolve
-        const saveAndResolve = (data) => {
-          this.geoData = data;
-          localStorage.setItem("min_sys_geo", JSON.stringify({ timestamp: Date.now(), data: this.geoData }));
-          resolve();
-        };
+        const saveAndResolve = (data) => {
+          this.geoData = data;
+          localStorage.setItem("min_sys_geo", JSON.stringify({ timestamp: Date.now(), data: this.geoData }));
+          resolve();
+        };
 
-        try {
-          const r1 = await fetch("https://ipapi.co/json/");
-          if (r1.ok) {
-            const d1 = await r1.json();
-            if (!d1.error) return saveAndResolve({ ip: d1.ip || "", country: d1.country_name || "", city: d1.city || "", isp: d1.org || "" });
-          }
-        } catch(e) {}
+        const endpoints = [
+          { url: "https://ipapi.co/json/", map: d => d.error ? null : { ip: d.ip, country: d.country_name, city: d.city, isp: d.org } },
+          { url: "https://ipwho.is/", map: d => !d.success ? null : { ip: d.ip, country: d.country, city: d.city, isp: d.connection?.isp } },
+          { url: "https://ipinfo.io/json", map: d => !d.ip ? null : { ip: d.ip, country: d.country, city: d.city, isp: d.org } },
+          { url: "https://freeipapi.com/api/json", map: d => !d.ipAddress ? null : { ip: d.ipAddress, country: d.countryName, city: d.cityName, isp: d.asn } },
+          { url: "https://api.bigdatacloud.net/data/client-ip", map: d => !d.ipString ? null : { ip: d.ipString, country: d.country?.name, city: d.location?.city, isp: "unknown" } }
+        ];
 
-        try {
-          const r2 = await fetch("https://ipwho.is/");
-          if (r2.ok) {
-            const d2 = await r2.json();
-            if (d2.success) return saveAndResolve({ ip: d2.ip || "", country: d2.country || "", city: d2.city || "", isp: d2.connection?.isp || "" });
-          }
-        } catch(e) {}
-
-        try {
-          const r3 = await fetch("http://ip-api.com/json/");
-          if (r3.ok) {
-            const d3 = await r3.json();
-            if (d3.status === "success") return saveAndResolve({ ip: d3.query || "", country: d3.country || "", city: d3.city || "", isp: d3.isp || "" });
-          }
-        } catch(e) {}
-
-        try {
-          const r4 = await fetch("https://ipinfo.io/json");
-          if (r4.ok) {
-            const d4 = await r4.json();
-            if (d4.ip) return saveAndResolve({ ip: d4.ip || "", country: d4.country || "", city: d4.city || "", isp: d4.org || "" });
-          }
-        } catch(e) {}
-
-        try {
-          const r5 = await fetch("https://freeipapi.com/api/json");
-          if (r5.ok) {
-            const d5 = await r5.json();
-            if (d5.ipAddress) return saveAndResolve({ ip: d5.ipAddress || "", country: d5.countryName || "", city: d5.cityName || "", isp: d5.asn || "" });
-          }
-        } catch(e) {}
-
-        try {
-          const r6 = await fetch("https://api.bigdatacloud.net/data/client-ip");
-          if (r6.ok) {
-            const d6 = await r6.json();
-            if (d6.ipString) return saveAndResolve({ ip: d6.ipString || "", country: d6.country?.name || "", city: d6.location?.city || "", isp: "unknown" });
-          }
-        } catch(e) {}
-
-        saveAndResolve({ ip: "unknown", country: "unknown", city: "unknown", isp: "unknown" });
-      });
-    },
+        for (let endpoint of endpoints) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            const res = await fetch(endpoint.url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (res.ok) {
+              const data = endpoint.map(await res.json());
+              if (data && data.ip) return saveAndResolve(data);
+            }
+          } catch (e) { continue; }
+        }
+        
+        saveAndResolve({ ip: "unknown", country: "unknown", city: "unknown", isp: "unknown" });
+      });
+    },
     
     logEvent: function(eventType, extraData = {}) {
       if (!this.geoData) return;
@@ -1541,7 +1512,7 @@ const CONFIG = {
       container.innerHTML = `
         <div class="min-sys-ticker-wrap">
           <div class="min-sys-ticker-content" style="color: ${data.textColor || '#FFFFFF'}">
-            ${data.message}
+            ${data.message || data.text || ''}
           </div>
         </div>
         <button class="min-sys-ticker-close" onclick="document.getElementById('min-sys-ticker').style.display='none'">
